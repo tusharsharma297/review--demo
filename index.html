@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sky Grill – Rate Your Experience</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --saffron:#E8871E;
+  --saffron-d:#C96F0A;
+  --green:#1B7A4A;
+  --green-l:#E8F5EE;
+  --red:#C0392B;
+  --red-l:#FDECEA;
+  --text:#1A1A1A;
+  --muted:#6B7280;
+  --border:#E5E7EB;
+  --white:#FFFFFF;
+  --bg:#F9F7F4;
+}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* HEADER */
+.header{
+  width:100%;
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.h-left{display:flex;align-items:center;gap:12px}
+.h-logo{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,#E8871E,#f5a623);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+}
+.h-name{font-size:17px;font-weight:700;color:var(--text);line-height:1.1}
+.h-loc{font-size:11px;color:var(--muted);margin-top:1px}
+.h-badge{
+  background:#FFF4E6;border:1px solid #F5C78A;
+  color:#C96F0A;font-size:11px;font-weight:600;
+  padding:5px 12px;border-radius:20px;white-space:nowrap;
+}
+
+/* CARD */
+.card{
+  width:100%;max-width:430px;
+  background:var(--white);
+  border-radius:24px;
+  padding:30px 24px;
+  margin:20px 14px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.08);
+}
+
+/* SCREEN CONTROL */
+.screen{display:none}
+.screen.active{display:block}
+
+/* STEP 1 - STARS */
+.s1-head{text-align:center;margin-bottom:28px}
+.s1-emoji{font-size:48px;display:block;margin-bottom:10px;transition:all 0.2s}
+.s1-title{font-size:20px;font-weight:700;color:var(--text)}
+.s1-sub{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+.stars-row{display:flex;justify-content:center;gap:6px;margin-bottom:8px}
+.star{
+  font-size:50px;cursor:pointer;
+  color:#E5E7EB;
+  transition:color 0.12s,transform 0.15s;
+  user-select:none;line-height:1;
+}
+.star.lit{color:#FBBF24}
+.star:hover{transform:scale(1.18)}
+
+.star-label{
+  text-align:center;font-size:14px;font-weight:600;
+  height:22px;margin-bottom:6px;transition:all 0.2s;
+}
+
+/* Google-style rating info */
+.rating-info{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;margin-bottom:24px;
+  font-size:12px;color:var(--muted);
+}
+.rating-info img{width:16px;height:16px}
+
+/* STEP 2 - PROMPTS */
+.prompts-head{
+  text-align:center;margin-bottom:20px;
+}
+.prompts-title{font-size:17px;font-weight:700;color:var(--text)}
+.prompts-sub{font-size:12px;color:var(--muted);margin-top:5px}
+
+.chips-label{
+  font-size:11px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.7px;
+  margin-bottom:10px;
+}
+.chips-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:8px;margin-bottom:20px;
+}
+.chip{
+  padding:12px 10px;border-radius:12px;
+  border:1.5px solid var(--border);
+  font-size:12px;font-weight:500;
+  cursor:pointer;
+  display:flex;flex-direction:column;
+  align-items:center;gap:5px;text-align:center;
+  transition:all 0.15s;background:#FAFAFA;
+  color:#4B5563;line-height:1.3;
+}
+.chip .ci{font-size:20px}
+.chip.pos.sel{border-color:var(--green);background:var(--green-l);color:var(--green)}
+.chip.neg.sel{border-color:var(--red);background:var(--red-l);color:var(--red)}
+.chip:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+
+.submit-btn{
+  width:100%;padding:16px;border:none;
+  border-radius:14px;font-size:15px;font-weight:700;
+  cursor:pointer;transition:all 0.2s;letter-spacing:0.2px;
+}
+.btn-good{
+  background:linear-gradient(135deg,#E8871E,#f5a623);
+  color:white;box-shadow:0 4px 14px rgba(232,135,30,0.3);
+}
+.btn-good:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(232,135,30,0.4)}
+.btn-bad{background:#1A1A1A;color:white}
+.btn-bad:hover{background:#333}
+
+/* STEP 3 GOOD */
+.good-result{text-align:center}
+.gr-icon{font-size:64px;margin-bottom:14px;display:block}
+.gr-title{font-size:22px;font-weight:800;color:var(--green);margin-bottom:8px}
+.gr-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px;max-width:300px;margin-left:auto;margin-right:auto}
+
+.review-selected{
+  background:#F0FDF4;border:1px solid #BBF7D0;
+  border-radius:12px;padding:14px;margin-bottom:20px;
+  text-align:left;
+}
+.rs-label{font-size:11px;font-weight:600;color:#166534;margin-bottom:6px}
+.rs-tags{display:flex;flex-wrap:wrap;gap:6px}
+.rs-tag{
+  background:#DCFCE7;color:#166534;
+  font-size:11px;font-weight:500;
+  padding:4px 10px;border-radius:20px;
+}
+
+.g-btn{
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;width:100%;padding:15px;
+  background:white;border:2px solid #4285F4;
+  border-radius:14px;color:#4285F4;
+  font-size:14px;font-weight:700;
+  cursor:pointer;text-decoration:none;
+  transition:all 0.2s;margin-bottom:10px;
+}
+.g-btn:hover{background:#4285F4;color:white}
+.g-btn svg path{transition:fill 0.2s}
+.g-btn:hover svg path{fill:white}
+
+/* STEP 3 BAD */
+.bad-result{text-align:center}
+.br-icon{font-size:64px;margin-bottom:14px;display:block}
+.br-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px}
+.br-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+
+/* TIMER */
+.timer-box{
+  background:#FFF7ED;border:2px solid #FED7AA;
+  border-radius:16px;padding:18px;margin-bottom:18px;
+}
+.tb-title{font-size:13px;font-weight:700;color:#C2410C;margin-bottom:10px}
+.tb-timer{
+  font-size:36px;font-weight:800;color:#EA580C;
+  font-variant-numeric:tabular-nums;letter-spacing:2px;
+  margin-bottom:6px;
+}
+.tb-sub{font-size:11px;color:#9A3412}
+
+.alert-sent{
+  background:#F0FDF4;border:1px solid #BBF7D0;
+  border-radius:12px;padding:14px;margin-bottom:16px;
+  text-align:left;
+}
+.as-title{font-size:12px;font-weight:700;color:#166534;margin-bottom:8px}
+.as-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#166534;margin-bottom:4px}
+
+.private-note{
+  font-size:11px;color:var(--muted);
+  background:#F9FAFB;border-radius:8px;
+  padding:10px;line-height:1.6;
+}
+
+/* ESCALATION SCREEN */
+.esc-result{text-align:center}
+.esc-icon{font-size:64px;margin-bottom:14px;display:block}
+.esc-title{font-size:20px;font-weight:800;color:var(--red);margin-bottom:8px}
+.esc-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+.esc-btn{
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;width:100%;padding:15px;
+  background:white;border:2px solid #4285F4;
+  border-radius:14px;color:#4285F4;
+  font-size:14px;font-weight:700;
+  cursor:pointer;text-decoration:none;
+  transition:all 0.2s;
+}
+.esc-btn:hover{background:#4285F4;color:white}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* ANIM */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.anim{animation:fadeUp 0.35s ease}
+
+/* FOOTER */
+.footer{
+  text-align:center;padding:12px;
+  font-size:11px;color:#C4C9D4;margin-bottom:10px;
+}
+.footer span{color:var(--saffron);font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="h-left">
+    <div class="h-logo">🍖</div>
+    <div>
+      <div class="h-name">Sky Grill</div>
+      <div class="h-loc">📍 Kishangarh, Ajmer</div>
+    </div>
+  </div>
+  <div class="h-badge">Table No. 7</div>
+</div>
+
+<div class="card">
+
+  <!-- ══ SCREEN 1: STAR RATING ══ -->
+  <div class="screen active" id="s1">
+    <div class="s1-head">
+      <span class="s1-emoji" id="s1emoji">😊</span>
+      <div class="s1-title">Aapka experience kaisa raha?</div>
+      <div class="s1-sub">Apni rating dijiye — Google jaisi simple!</div>
+    </div>
+
+    <div class="stars-row" id="starsRow">
+      <span class="star" data-v="1">★</span>
+      <span class="star" data-v="2">★</span>
+      <span class="star" data-v="3">★</span>
+      <span class="star" data-v="4">★</span>
+      <span class="star" data-v="5">★</span>
+    </div>
+    <div class="star-label" id="starLabel"></div>
+
+    <div class="rating-info">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Google Reviews par post hoga
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 2A: GOOD PROMPTS ══ -->
+  <div class="screen" id="s2good">
+    <div class="prompts-head anim">
+      <div class="prompts-title">Kya khaas laga aapko? 😍</div>
+      <div class="prompts-sub">Jo bhi accha laga select karein (multiple)</div>
+    </div>
+
+    <div class="chips-label">Khane ke baare mein</div>
+    <div class="chips-grid">
+      <div class="chip pos" data-t="Khana bilkul lajawaab tha 🍽️"><span class="ci">🍽️</span>Khana lajawaab</div>
+      <div class="chip pos" data-t="Taste ekdum perfect tha 😋"><span class="ci">😋</span>Taste perfect</div>
+      <div class="chip pos" data-t="Portions kaafi bade the 🥘"><span class="ci">🥘</span>Portion bada</div>
+      <div class="chip pos" data-t="Variety bahut acchi thi 📋"><span class="ci">📋</span>Variety acchi</div>
+    </div>
+
+    <div class="chips-label">Service & Mahaul</div>
+    <div class="chips-grid">
+      <div class="chip pos" data-t="Service super fast thi ⚡"><span class="ci">⚡</span>Fast service</div>
+      <div class="chip pos" data-t="Staff bahut helpful tha 🙏"><span class="ci">🙏</span>Helpful staff</div>
+      <div class="chip pos" data-t="Ambiance bahut sundar tha ✨"><span class="ci">✨</span>Sundar ambiance</div>
+      <div class="chip pos" data-t="Paisa vasool tha bilkul 💰"><span class="ci">💰</span>Paisa vasool</div>
+    </div>
+
+    <button class="submit-btn btn-good" onclick="submitGood()">
+      ⭐ Google par Review Post Karein →
+    </button>
+  </div>
+
+  <!-- ══ SCREEN 2B: BAD PROMPTS ══ -->
+  <div class="screen" id="s2bad">
+    <div class="prompts-head anim">
+      <div class="prompts-title">Kya problem aayi? 😕</div>
+      <div class="prompts-sub">Batayein — hum zaroor sudharenge</div>
+    </div>
+
+    <div class="chips-label">Khane ki problem</div>
+    <div class="chips-grid">
+      <div class="chip neg" data-t="Khana thanda tha 🥶"><span class="ci">🥶</span>Khana thanda</div>
+      <div class="chip neg" data-t="Taste accha nahi tha 😔"><span class="ci">😔</span>Taste kharab</div>
+      <div class="chip neg" data-t="Portion bahut chhota tha 😤"><span class="ci">😤</span>Portion chhota</div>
+      <div class="chip neg" data-t="Quality theek nahi thi 👎"><span class="ci">👎</span>Quality kharab</div>
+    </div>
+
+    <div class="chips-label">Service ki problem</div>
+    <div class="chips-grid">
+      <div class="chip neg" data-t="Service bahut slow thi 🐢"><span class="ci">🐢</span>Slow service</div>
+      <div class="chip neg" data-t="Staff ka behaviour theek nahi tha 😕"><span class="ci">😕</span>Staff rude tha</div>
+      <div class="chip neg" data-t="Safai ka dhyan nahi tha 🧹"><span class="ci">🧹</span>Safai nahi thi</div>
+      <div class="chip neg" data-t="Price bahut zyada laga 💸"><span class="ci">💸</span>Price zyada</div>
+    </div>
+
+    <button class="submit-btn btn-bad" onclick="submitBad()">
+      📩 Private Feedback Bhejein
+    </button>
+  </div>
+
+  <!-- ══ SCREEN 3A: GOOD RESULT ══ -->
+  <div class="screen" id="s3good">
+    <div class="good-result anim">
+      <span class="gr-icon">🎉</span>
+      <div class="gr-title">Bahut shukriya!</div>
+      <div class="gr-msg">Aapka feedback sun ke dil khush ho gaya! Niche Google par bhi share karein — dusre customers ko bahut madad hogi.</div>
+
+      <div class="review-selected" id="goodTags"></div>
+
+      <a class="g-btn" href="https://share.google/3kSuYgNVBg5nxBRKL" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Google par Review Likhein
+      </a>
+      <div style="font-size:11px;color:#9CA3AF;text-align:center;margin-top:8px">
+        Sky Grill · 4.3 ★ · 1,644 reviews
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3B: BAD RESULT + TIMER ══ -->
+  <div class="screen" id="s3bad">
+    <div class="bad-result anim">
+      <span class="br-icon">🙏</span>
+      <div class="br-title">Feedback Mil Gaya!</div>
+      <div class="br-msg">Hume khed hai. Manager ko abhi alert kar diya gaya hai. Agar <strong>1 ghante mein</strong> resolve nahi hua toh aapka review Google par jayega.</div>
+
+      <div class="timer-box">
+        <div class="tb-title">⏱️ Manager Response Timer</div>
+        <div class="tb-timer" id="timerDisplay">01:00:00</div>
+        <div class="tb-sub">Agar time khatam hua → review Google par post ho jayega</div>
+      </div>
+
+      <div class="alert-sent">
+        <div class="as-title">✅ Alert Bheja Gaya</div>
+        <div class="as-row">📱 WhatsApp: +91 98290000097</div>
+        <div class="as-row">📧 Email: manager@skygrill.com</div>
+      </div>
+
+      <div class="private-note">
+        🔒 Abhi tak aapka review <strong>Google par nahi gaya</strong>. Manager se direct baat karna chahein toh:<br>
+        <strong style="color:var(--text)">📞 +91 98290000097</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 4: ESCALATION ══ -->
+  <div class="screen" id="s4esc">
+    <div class="esc-result anim">
+      <span class="esc-icon">⚠️</span>
+      <div class="esc-title">1 Ghanta Ho Gaya!</div>
+      <div class="esc-msg">Manager ne abhi tak respond nahi kiya. Aapka feedback ab Google par post kiya ja raha hai taaki doosre customers aware ho sakein.</div>
+
+      <a class="esc-btn" href="https://share.google/3kSuYgNVBg5nxBRKL" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Google par Review Post Karein
+      </a>
+
+      <div style="font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6">
+        Agli baar behtar experience milega — promise! 🙏
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Powered by <span>ReviewPro</span> · Smart Review Management</div>
+
+<script>
+const GOOGLE_LINK = 'https://share.google/3kSuYgNVBg5nxBRKL';
+const TIMER_SECONDS = 3600; // 1 hour = demo mein 10 sec hai
+const DEMO_TIMER = 10; // demo ke liye 10 seconds (real mein 3600)
+
+const feelings = ['','Bahut bura raha 😞','Theek nahi tha 😕','Average tha 😐','Accha laga 😊','Zabardast! 🤩'];
+const emojis   = ['😊','😡','😕','😐','😊','🤩'];
+let curRating = 0;
+let timerInterval = null;
+let timeLeft = DEMO_TIMER;
+
+// ── STARS ──
+document.querySelectorAll('.star').forEach(s => {
+  s.addEventListener('click', () => {
+    curRating = +s.dataset.v;
+    applyRating(curRating);
+  });
+  s.addEventListener('mouseenter', () => { if(!curRating) previewStars(+s.dataset.v); });
+  s.addEventListener('mouseleave', () => { if(!curRating) previewStars(0); });
+});
+
+function previewStars(v){
+  document.querySelectorAll('.star').forEach(s => s.classList.toggle('lit', +s.dataset.v <= v));
+  document.getElementById('starLabel').textContent = v ? feelings[v] : '';
+  document.getElementById('starLabel').style.color = v >= 4 ? '#1B7A4A' : v > 0 ? '#C0392B' : '#6B7280';
+}
+
+function applyRating(v){
+  previewStars(v);
+  document.getElementById('s1emoji').textContent = emojis[v];
+  setTimeout(() => {
+    if(v >= 4) showScreen('s2good');
+    else showScreen('s2bad');
+  }, 400);
+}
+
+// ── CHIPS ──
+document.querySelectorAll('.chip').forEach(c => {
+  c.addEventListener('click', () => c.classList.toggle('sel'));
+});
+
+function getSelectedTags(){
+  return [...document.querySelectorAll('.chip.sel')].map(c => c.dataset.t);
+}
+
+// ── SUBMIT GOOD ──
+function submitGood(){
+  const tags = getSelectedTags();
+  const box = document.getElementById('goodTags');
+  if(tags.length > 0){
+    box.innerHTML = '<div class="rs-label">✅ Aapne select kiya:</div><div class="rs-tags">' +
+      tags.map(t => `<span class="rs-tag">${t}</span>`).join('') + '</div>';
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+  showScreen('s3good');
+}
+
+// ── SUBMIT BAD ──
+function submitBad(){
+  showScreen('s3bad');
+  startTimer();
+}
+
+// ── TIMER ──
+function startTimer(){
+  timeLeft = DEMO_TIMER;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      showScreen('s4esc');
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const h = Math.floor(timeLeft / 3600);
+  const m = Math.floor((timeLeft % 3600) / 60);
+  const s = timeLeft % 60;
+  document.getElementById('timerDisplay').textContent =
+    String(h).padStart(2,'0') + ':' +
+    String(m).padStart(2,'0') + ':' +
+    String(s).padStart(2,'0');
+}
+
+// ── SCREEN SWITCH ──
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  el.classList.add('anim');
+  setTimeout(() => el.classList.remove('anim'), 400);
+}
+</script>
+</body>
+</html>
